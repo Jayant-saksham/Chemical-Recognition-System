@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Camera App</title>
+    <!-- Include Tailwind CSS -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
+      rel="stylesheet"
+    />
+  </head>
+
+  <body class="bg-gray-100">
+    <!-- Navbar -->
+    <nav class="bg-blue-500 py-4">
+      <div class="container mx-auto flex justify-between items-center">
+        <h1 class="text-white text-2xl font-semibold">Ingredients Finder</h1>
+        <div class="flex items-center">
+          <a href="#" class="text-white text-lg mx-4 hover:text-gray-300">Home</a>
+          <a href="#" class="text-white text-lg mx-4 hover:text-gray-300">About</a>
+          <a href="#" class="text-white text-lg mx-4 hover:text-gray-300">Contact</a>
+        </div>
+      </div>
+    </nav>
+
+
+    <!-- Content -->
+    <div class="container mx-auto px-4 py-8">
+      <!-- Camera feed -->
+      <div class="mb-8">
+        <img
+          src="{{ url_for('video_feed') }}"
+          class="w-full rounded-lg shadow-lg"
+          alt="Camera Feed"
+        />
+      </div>
+
+      <!-- Capture button -->
+      <div>
+        <a
+          href="{{ url_for('capture') }}"
+          class="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-lg"
+          >Capture</a
+        >
+      </div>
+
+      <!-- Upload image form -->
+      <div class="mt-8">
+        <form
+          action="/upload_image"
+          method="post"
+          enctype="multipart/form-data"
+        >
+          <label
+            for="imageUpload"
+            class="block text-lg font-medium text-gray-700 mb-2"
+            >Upload Image:</label
+          >
+          <div class="flex items-center space-x-4">
+            <input
+              type="file"
+              name="file"
+              id="imageUpload"
+              class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+            />
+            <button
+              type="submit"
+              class="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-lg"
+            >
+              Upload
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Modal for displaying extracted text -->
+      <div id="textModal" class="fixed z-10 inset-0 overflow-y-auto hidden">
+        <div
+          class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0"
+        >
+          <!-- Background overlay -->
+          <div class="fixed inset-0 transition-opacity" aria-hidden="true">
+            <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
+          </div>
+          <!-- This element is to trick the browser into centering the modal contents. -->
+          <span
+            class="hidden sm:inline-block sm:align-middle sm:h-screen"
+            aria-hidden="true"
+            >&#8203;</span
+          >
+          <!-- Modal panel -->
+          <div
+            class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full"
+          >
+            <!-- Modal content -->
+            <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+              <div class="mb-4">
+                <h3 class="text-lg font-medium text-gray-900">
+                  Extracted Text
+                </h3>
+                <p class="mt-1 text-sm text-gray-500">
+                  The text extracted from the image.
+                </p>
+              </div>
+              <!-- Close button -->
+              <div class="absolute top-0 right-0 pt-4 pr-4">
+                <button
+                  type="button"
+                  class="text-gray-400 hover:text-gray-500 focus:outline-none focus:text-gray-500"
+                  onclick="closeModal()"
+                >
+                  <svg
+                    class="h-6 w-6"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    aria-hidden="true"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M6 18L18 6M6 6l12 12"
+                    />
+                  </svg>
+                </button>
+              </div>
+              <!-- Extracted text -->
+              <div class="mt-2">
+                <textarea
+                  id="extractedText"
+                  class="w-full px-3 py-2 placeholder-gray-400 border border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm resize-none"
+                  rows="5"
+                  readonly
+                >
+{{ extracted_text }}</textarea
+                >
+              </div>
+              <!-- Copy button -->
+              <div class="mt-4">
+                <button
+                  id="copyButton"
+                  class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                  onclick="copyText()"
+                >
+                  Copy Text
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // Show modal with extracted text when the page loads
+      window.addEventListener("DOMContentLoaded", function () {
+        document.getElementById("textModal").classList.remove("hidden");
+      });
+
+      // Function to close modal
+      function closeModal() {
+        document.getElementById("textModal").classList.add("hidden");
+      }
+
+      // Function to copy text to clipboard
+      function copyText() {
+        var textArea = document.getElementById("extractedText");
+        textArea.select();
+        document.execCommand("copy");
+        alert("Text copied to clipboard!");
+      }
+    </script>
+  </body>
+</html>
